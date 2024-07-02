@@ -1,59 +1,64 @@
 import React, { useState } from 'react';
+import { Form, Button, Container } from "react-bootstrap";
+import { registerUser } from "../api/auth";
+import { useNavigate } from "react-router-dom";
 
 const Register = () => {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await fetch('http://localhost:5000/api/users/register', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ name, email, password }),
-            });
-
-            if (!response.ok) {
-                throw new Error('An error occurred');
-            }
-
-            const data = await response.json();
-            alert('User registered successfully');
-            window.location.href = '/login';
+            await registerUser(name, email, password);
+            alert("User registered successfully");
+            navigate("/login");
         } catch (error) {
             console.error(error.message);
         }
     };
 
     return (
-        <form onSubmit={handleSubmit}>
-            <h1>Register</h1>
-            <input
-                type="text"
-                placeholder="Name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-            />
-            <input
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-            />
-            <input
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-            />
-            <button type="submit">Register</button>
-        </form>
+        <Container>
+            <h2>Register</h2>
+            <Form onSubmit={handleSubmit}>
+                <Form.Group controlId="formBasicName">
+                    <Form.Label>Name</Form.Label>
+                    <Form.Control
+                        type="text"
+                        placeholder="Enter name"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        required
+                    />
+                </Form.Group>
+                <Form.Group controlId="formBasicEmail">
+                    <Form.Label>Email address</Form.Label>
+                    <Form.Control
+                        type="email"
+                        placeholder="Enter email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                    />
+                </Form.Group>
+                <Form.Group controlId="formBasicPassword">
+                    <Form.Label>Password</Form.Label>
+                    <Form.Control
+                        type="password"
+                        placeholder="Password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                    />
+                </Form.Group>
+                <Button variant="primary" type="submit">
+                    Submit
+                </Button>
+            </Form>
+        </Container>
     );
 };
 
