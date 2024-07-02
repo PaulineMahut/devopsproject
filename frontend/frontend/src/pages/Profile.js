@@ -1,42 +1,36 @@
 import React, { useState, useEffect } from 'react';
+import { Container } from 'react-bootstrap';
+import { getProfile } from "../api/auth";
 
 const Profile = () => {
     const [user, setUser] = useState(null);
 
     useEffect(() => {
-        const fetchProfile = async () => {
-            const token = localStorage.getItem('token');
-            if (token) {
-                try {
-                    const response = await fetch('http://localhost:5000/api/users/profile', {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                        },
-                    });
-
-                    if (!response.ok) {
-                        throw new Error('An error occurred');
-                    }
-
-                    const data = await response.json();
-                    setUser(data);
-                } catch (error) {
-                    console.error('Failed to fetch user profile:', error);
-                }
+        const getUserProfile = async () => {
+            try {
+                const data = await getProfile();
+                setUser(data);
+            } catch (error) {
+                console.error(error.message);
             }
-        };
-
-        fetchProfile();
+        }
+        getUserProfile();
     }, []);
 
-    if (!user) return <div>Loading...</div>;
+    if (!user) {
+        return (
+            <Container>
+                <h1>No data found</h1>
+            </Container>
+        );
+    }
 
     return (
-        <div>
+        <Container>
             <h1>Profile</h1>
             <p>Name: {user.name}</p>
             <p>Email: {user.email}</p>
-        </div>
+        </Container>
     );
 };
 
