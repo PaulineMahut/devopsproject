@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  mongo:
+    image: mongo:latest
+    container_name: mongodb
+    restart: always
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: rudysaksik
+      MONGO_INITDB_ROOT_PASSWORD: Jid5oTAvV3v2oRCX
+    volumes:
+      - mongo-data:/data/db
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: backend
+    restart: always
+    ports:
+      - 5000:5000
+    environment:
+      MONGODB_URI: mongodb://rudysaksik:Jid5oTAvV3v2oRCX@mongo:27017/devops?authSource=admin
+      JWT_SECRET: 123456
+    depends_on:
+      - mongo
+    volumes:
+      - ./backend:/app
+
+  frontend:
+    build:
+      context: ./frontend/frontend
+      dockerfile: Dockerfile
+    container_name: frontend
+    restart: always
+    ports:
+      - 3000:3000
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend/frontend:/app
+
+volumes:
+  mongo-data:
